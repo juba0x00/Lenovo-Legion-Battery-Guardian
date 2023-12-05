@@ -1,0 +1,10 @@
+[Unit]
+After=network.target
+
+[Service]
+WorkingDirectory=/
+ExecStart=/usr/bin/lenovo-battery-guardian.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
