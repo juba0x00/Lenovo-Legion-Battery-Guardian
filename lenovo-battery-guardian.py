@@ -1,9 +1,19 @@
 #!/usr/bin/python3
 import logging
+import os
 from time import sleep
 
-conservation_mode_file = "/sys/module/legion_laptop/drivers/platform:legion/PNP0C09:00/VPC2004:00/conservation_mode"
 logging.basicConfig(level=logging.INFO, filename='/var/log/legion-battery-guardian.log', format='%(asctime)s - %(levelname)s - %(message)s')
+
+conservation_mode_file_1 = "/sys/module/legion_laptop/drivers/platform:legion/PNP0C09:00/VPC2004:00/conservation_mode"
+conservation_mode_file_2 = "/sys/devices/pci0000:00/0000:00:14.3/PNP0C09:00/VPC2004:00/conservation_mode"
+
+if os.path.exists("/sys/module/legion_laptop/"):
+    conservation_mode_file = conservation_mode_file_1
+else:
+    conservation_mode_file = conservation_mode_file_2
+
+logging.info("Conservation mode file selected"+conservation_mode_file)
 
 def read_file(file_path):
     with open(file_path, 'r') as file:
