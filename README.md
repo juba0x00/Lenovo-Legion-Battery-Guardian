@@ -11,3 +11,14 @@ curl https://raw.githubusercontent.com/juba0x00/Lenovo-Legion-Battery-Guardian/m
 ```bash
 curl https://raw.githubusercontent.com/juba0x00/Lenovo-Legion-Battery-Guardian/main/uninstall.sh | bash
 ```
+
+You can check the status of this service with:
+```bash
+systemctl status lenovo-battery-guardian.service
+```
+
+To follow its log:
+
+```bash
+journalctl -f -u lenovo-battery-guardian.service
+```
