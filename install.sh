@@ -1,3 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+
 git clone https://github.com/juba0x00/Lenovo-Legion-Battery-Guardian
 cd "Lenovo-Legion-Battery-Guardian"
 sudo cp lenovo-battery-guardian.py /usr/bin
