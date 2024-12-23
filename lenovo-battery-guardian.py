@@ -1,9 +1,17 @@
 #!/usr/bin/python3
-import logging
+from systemd import journal
+import os
 from time import sleep
 
-conservation_mode_file = "/sys/module/legion_laptop/drivers/platform:legion/PNP0C09:00/VPC2004:00/conservation_mode"
-logging.basicConfig(level=logging.INFO, filename='/var/log/legion-battery-guardian.log', format='%(asctime)s - %(levelname)s - %(message)s')
+conservation_mode_file_1 = "/sys/module/legion_laptop/drivers/platform:legion/PNP0C09:00/VPC2004:00/conservation_mode"
+conservation_mode_file_2 = "/sys/devices/pci0000:00/0000:00:14.3/PNP0C09:00/VPC2004:00/conservation_mode"
+
+if os.path.exists("/sys/module/legion_laptop/"):
+    conservation_mode_file = conservation_mode_file_1
+else:
+    conservation_mode_file = conservation_mode_file_2
+
+journal.send("Conservation mode file selected"+conservation_mode_file)
 
 def read_file(file_path):
     with open(file_path, 'r') as file:
@@ -27,7 +35,7 @@ def has_capacity_changed(info, prev_info):
 
 if __name__ == '__main__':
     try:
-        logging.info("Battery conservation script started.")
+        journal.send("Battery conservation script started.")
         prev_info = "init"
 
         while True:
@@ -38,19 +46,19 @@ if __name__ == '__main__':
 
             if capacity >= 95 and not conservation:
                 write_file(conservation_mode_file, '1')  # Stop charging
-                logging.info(f"{info} | Battery charging stopped") if has_capacity_changed(info, prev_info) else None
+                journal.send(f"{info} | Battery charging stopped") if has_capacity_changed(info, prev_info) else None
 
             elif capacity < 95 and conservation:
                 write_file(conservation_mode_file, '0')  # Start charging
-                logging.info(f"{info} | Enable Battery charging") if has_capacity_changed(info, prev_info) else None
+                journal.send(f"{info} | Enable Battery charging") if has_capacity_changed(info, prev_info) else None
 
             else:
-                logging.info(info) if has_capacity_changed(info, prev_info) else None
+                journal.send(info) if has_capacity_changed(info, prev_info) else None
 
             sleep(7 * 60)  # 7 minutes
             prev_info = info
 
     except KeyboardInterrupt:
-        logging.info("Battery conservation script terminated by the user.")
+        journal.send("Battery conservation script terminated by the user.")
     except Exception as e:
-        logging.exception("An error occurred: %s", str(e))
+        journal.send("An error occurred: %s", str(e))
